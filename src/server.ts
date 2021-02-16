@@ -8,11 +8,6 @@ import { endpoints } from './interface/api/api.conf';
 const { PORT, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'development';
 
-const sapperMiddleWare = (req, res, next) => {
-  if ( req.path.startsWith('/api')) return next();
-	sapper.middleware()(req, res, next);
-};
-
 async function bootstrap() {
 	const app = await NestFactory.create(ServerModule);
 
@@ -20,7 +15,7 @@ async function bootstrap() {
 	app.use(
 		compression({ threshold: 0 }),
 		sirv('static', { dev }),
-		sapperMiddleWare,
+		sapper.middleware({ignore: /^\/api(.*)/}),
 	);
 
 	await app.listen(PORT || 3000);
